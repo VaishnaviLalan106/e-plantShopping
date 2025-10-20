@@ -9,29 +9,50 @@ const CartItem = ({ onContinueShopping }) => {
 
   // Calculate total amount for all products in the cart
   const calculateTotalAmount = () => {
- 
+    let total = 0;
+    cart.forEach((item) => {
+      const quantity = item.quantity;
+      const cost = parseFloat(item.cost.substring(1));
+      total += cost * quantity;
+    });
+    return total.toFixed(2);
   };
-
   const handleContinueShopping = (e) => {
-   
+    e.preventDefault();
+    onContinueShopping(e); // ✅ Call parent function to go back to plant listing
   };
-
-
-
+  const handleCheckoutShopping = () => {
+  alert('Functionality to be added for future reference');
+};
   const handleIncrement = (item) => {
+    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
   };
 
+  // ➖ Decrement quantity (with check)
   const handleDecrement = (item) => {
-   
+    if (item.quantity > 1) {
+      // Decrease quantity by 1
+      dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
+    } else {
+      // Quantity would become 0 → remove item completely
+      dispatch(removeItem(item.name));
+    }
   };
 
+  // 🗑️ Remove item from cart directly
   const handleRemove = (item) => {
+    dispatch(removeItem(item.name));
   };
 
   // Calculate total cost based on quantity for an item
-  const calculateTotalCost = (item) => {
-  };
-
+  // 🧮 Calculate subtotal for this item
+const calculateTotalCost = (item) => {
+  const cost = parseFloat(item.cost.substring(1)); // remove "$" and convert to number
+  return (cost * item.quantity).toFixed(2);        // multiply by quantity and format
+};
+const totalItems = useSelector((state) =>
+  state.cart.items.reduce((sum, item) => sum + item.quantity, 0)
+);
   return (
     <div className="cart-container">
       <h2 style={{ color: 'black' }}>Total Cart Amount: ${calculateTotalAmount()}</h2>
